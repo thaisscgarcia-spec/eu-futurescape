@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EU FutureScape · Green Deal AR</title>
+<style>
+:root{--bg:#F1F5FA;--fg:#14202E;--mut:#4A5B6C;--card:#fff;--line:#D3DDE8;--blue:#004494;--yel:#FFD617;--grn:#2E9E5B;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1620;--fg:#E8EEF5;--mut:#9DB0C3;--card:#16232F;--line:#2A3B4B}}
+:root[data-theme="dark"]{--bg:#0D1620;--fg:#E8EEF5;--mut:#9DB0C3;--card:#16232F;--line:#2A3B4B}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:#050b12;color:var(--fg);font:15px/1.45 Arial,"Helvetica Neue",Roboto,sans-serif;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+.tab{display:none;flex:1;min-height:0;position:relative}.tab.on{display:flex;flex-direction:column}
+.pad{padding:18px;overflow-y:auto;flex:1}
+h1{font-size:24px;margin:0 0 6px;color:var(--blue)}
+:root[data-theme="dark"] h1{color:#7FB0F5}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) h1{color:#7FB0F5}}
+nav{display:flex;background:linear-gradient(#003a80,#002a5c);flex:none}
+nav button{flex:1;background:none;border:0;color:#fff;padding:10px 2px 9px;font:inherit;font-size:11px;opacity:.7;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center}
+nav button span{font-size:18px}nav button[aria-selected=true]{opacity:1;box-shadow:inset 0 3px var(--yel)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+#view{position:absolute;inset:0 0 240px 0;background:#111;overflow:hidden}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.glass{background:rgba(13,22,32,.66);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.16);color:#fff}
+.top{position:absolute;top:0;left:0;right:0;padding:10px;display:flex;justify-content:space-between;gap:6px;background:linear-gradient(rgba(0,0,0,.5),transparent);transition:opacity .5s}
+.chip{border-radius:20px;padding:7px 12px;font:inherit;font-size:12px;cursor:pointer}
+.rail{position:absolute;right:10px;top:64px;display:flex;flex-direction:column;gap:8px;transition:opacity .5s}
+.rail button{width:48px;height:52px;border-radius:14px;font:inherit;font-size:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.rail button span{font-size:19px}.rail button[aria-pressed=true]{background:var(--yel);color:#14202E;font-weight:700;border-color:#fff}
+.scan{position:absolute;inset:0;display:none;pointer-events:none}.scan.on{display:block}
+.scan i{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#FFD617,transparent);box-shadow:0 0 28px 6px rgba(255,214,23,.6);animation:sw 1.3s ease-in-out infinite alternate}
+@keyframes sw{from{top:6%}to{top:94%}}
+.scan b{position:absolute;left:50%;top:46%;transform:translateX(-50%);padding:8px 16px;border-radius:20px;font-size:13px}
+.sheet{position:absolute;left:0;right:0;bottom:0;height:240px;background:linear-gradient(#152636,#0b1622);color:#fff;border-radius:24px 24px 0 0;box-shadow:0 -10px 34px rgba(0,0,0,.5);display:flex;flex-direction:column;transition:height .35s cubic-bezier(.2,.8,.2,1);z-index:4}
+.sheet.open{height:80%}
+.sbody{overflow-y:auto;flex:1;padding:0 14px 14px}
+.grab{align-self:center;width:64px;height:22px;background:none;border:0;cursor:pointer;flex:none}.grab:after{content:"";display:block;width:38px;height:5px;border-radius:3px;background:rgba(255,255,255,.4);margin:8px auto}
+.yrow{display:flex;justify-content:space-between;align-items:center}
+.yr{font-size:38px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.ph{font-size:12px;margin-top:4px;display:flex;align-items:center;gap:6px}.ph i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.pm{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:20px;cursor:pointer;margin-left:6px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:4px 0}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#3C7DD9,#F2C14E,#E8833A,#C8402B,#7A1F1F)}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#3C7DD9,#F2C14E,#E8833A,#C8402B,#7A1F1F)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--yel);border:3px solid #fff;margin-top:-10px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--yel);border:3px solid #fff}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tile{background:rgba(255,255,255,.07);border-radius:12px;padding:8px 7px}
+.tile .tl{font-size:10px;opacity:.75;white-space:nowrap}.tile b{font-size:15px;display:block;margin:2px 0 5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tb{height:5px;border-radius:3px;background:rgba(255,255,255,.14);overflow:hidden}.tb i{display:block;height:100%;transition:width .4s,background .4s}
+.tile small{font-size:9px;opacity:.55}
+.more{display:none;margin-top:12px}.sheet.open .more{display:block}
+.c2{background:rgba(255,255,255,.07);border-radius:14px;padding:12px;margin-bottom:10px}
+.c2 h4{margin:0 0 6px;font-size:13px}.c2 p{margin:0;font-size:13px;opacity:.88}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.st{background:rgba(255,255,255,.07);border-radius:12px;padding:10px}.st b{font-size:22px;font-variant-numeric:tabular-nums}.st small{display:block;font-size:11px;opacity:.7}.st em{font-style:normal;font-size:11px;color:#F2C14E}
+.ms{list-style:none;margin:0;padding:0}.ms li{display:flex;gap:10px;font-size:12px;padding:5px 0;opacity:.45}.ms li.p{opacity:1}.ms li b{min-width:38px}
+.ms li.p b{color:var(--yel)}
+.src{font-size:10px;opacity:.55;margin:8px 0 0}
+.cta{background:var(--yel);color:#14202E;border:0;border-radius:12px;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer;width:100%;margin-top:8px}
+.cta.sec{background:transparent;color:inherit;border:1px solid currentColor;font-weight:400}
+.pivot{position:absolute;inset:0;z-index:8;display:none;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:28px;color:#fff;background:radial-gradient(circle,rgba(0,68,148,.55),rgba(5,11,18,.94))}
+.pivot.on{display:flex;animation:fi 1.2s}.pivot h2{font-size:28px;margin:0 0 10px;max-width:15ch}
+@keyframes fi{from{opacity:0}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.card h3{margin:0 0 4px;font-size:16px}.mut{color:var(--mut);font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--grn);transition:width .4s}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer;margin:8px 6px 0 0}.btn.ok{background:var(--grn)}.btn[disabled]{opacity:.45;cursor:default}
+.onb{position:absolute;inset:0;z-index:9;background:radial-gradient(120% 80% at 20% 0,#0e58b8,#003070 55%,#001a3d);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:28px}
+.onb h1{color:#fff;font-size:34px;line-height:1.05}.onb p{opacity:.88}
+.sc{display:flex;gap:8px;margin:10px 0 14px}.sc button{flex:1;text-align:left;padding:12px;border-radius:14px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;font:inherit;cursor:pointer}
+.sc button[aria-pressed=true]{border-color:var(--yel);background:rgba(255,214,23,.15)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body><div class="app">
+
+<div class="onb" id="onb"><h1>EU FutureScape</h1>
+<p>Point at your street and watch it change to 2050, right in the image. Then help change the outcome. This is a scenario simulation, not a forecast.</p>
+<b>Choose a scenario</b>
+<div class="sc" id="scPick"><button data-s="1" aria-pressed="true"><b>Current trajectory</b><br><small>SSP5-8.5 · High emissions</small></button><button data-s=".6" aria-pressed="false"><b>Ambitious action</b><br><small>SSP2-4.5 · Middle road</small></button></div>
+<button class="cta" id="bCam">Scan with my camera</button>
+<button class="cta sec" id="bPhoto">Scan a photo of my street</button>
+<button class="cta sec" id="bDemo">Use the demo street</button>
+<input type="file" id="file" accept="image/*" hidden>
+<p style="font-size:12px;opacity:.7;margin-top:14px">Images stay on your device. Look up and stay aware of your surroundings.</p></div>
+
+<section class="tab on" id="t-scan"><div id="view"><canvas id="cv"></canvas><video id="cam" playsinline muted hidden></video>
+<div class="scan" id="scan"><i></i><b class="glass" id="scanT">Detecting ground…</b></div>
+<div class="top" id="top"><button class="chip glass" id="loc">📍 Demo street ▾</button><span class="chip glass">Simulation</span><button class="chip glass" id="scBtn"></button></div>
+<div class="rail" id="rail"></div></div>
+
+<div class="sheet" id="sh"><button class="grab" id="grab" aria-label="Show or hide details"></button>
+<div class="sbody"><div class="yrow"><div><div class="yr" id="yr">2026</div><div class="ph"><i id="phc"></i><span id="ph"></span></div></div>
+<div id="steps"><button class="pm" id="mn" aria-label="Previous year">−</button><button class="pm" id="pl" aria-label="Next year">+</button></div></div>
+<input type="range" id="sld" min="2026" max="2050" value="2026" aria-label="Year">
+<div id="cmpRow" hidden><input type="range" id="cmp" min="0" max="100" value="50" aria-label="Compare degraded and restored"><button class="cta sec" id="exitR" style="margin:0 0 8px;padding:8px">Back to the timeline</button></div>
+<div class="tiles" id="tiles"></div>
+<div class="more"><div class="c2" id="story"></div><div class="grid" id="stats"></div>
+<div class="c2"><h4>Temperature path at your street</h4><svg id="chart" viewBox="0 0 300 100" width="100%" role="img" aria-label="Temperature rise by year for both scenarios"></svg></div>
+<div class="c2"><h4>Milestones</h4><ul class="ms" id="ms"></ul></div>
+<div class="c2"><h4>What can change this</h4><p>Shade, green roofs, cleaner transport and less energy waste each lower local heat and pollution. Missions turn those into actions you can log.</p><button class="cta" id="toAct">Take Action</button></div>
+<p class="src">Illustrative values. Production sources: Copernicus C3S (temperature, precipitation), CAMS (air quality), Land Monitoring and Sentinel-2 (canopy). *Biodiversity is a proxy from habitat change (EEA, Natura 2000).</p></div></div></div>
+
+<div class="pivot" id="pivot"><h2>This is a possible future. Not a certain one.</h2><p>Your street could look like this. What people do next changes it.</p><button class="cta" id="goAct">Take Action</button><button class="cta sec" id="keep">Keep exploring</button></div>
+</section>
+
+<section class="tab" id="t-mis"><div class="pad"><h1>Missions</h1><p class="mut">Do it in real life, then log it. Each completed mission strengthens your street's restoration.</p><div id="mlist"></div></div></section>
+<section class="tab" id="t-area"><div class="pad"><h1>My area</h1>
+<div class="card"><h3>Neighborhood score</h3><div id="score" style="font-size:34px;font-weight:700">0</div><div class="bar"><i id="scBar" style="width:0"></i></div><p class="mut" id="areaTxt"></p></div>
+<div class="card"><h3>Rescan</h3><p class="mut">Missions need about a week to show up. Then rescan to see the restored street, with a before/after slider.</p><button class="btn" id="ff">Fast-forward 7 days (demo)</button><button class="btn ok" id="rescan" disabled>Rescan my street</button></div>
+<div class="card"><h3>Impact log</h3><p class="mut" id="log"></p></div><button class="btn" id="reset" style="background:none;color:var(--mut);border:1px solid var(--line)">Reset progress</button></div></section>
+<section class="tab" id="t-learn"><div class="pad"><h1>Learn</h1>
+<div class="card"><h3>How we model this</h3><p class="mut">The picture itself is edited: greens are detected and dried out, the sky and air are tinted by haze, roads heat up, and water rises from the ground. Values here are illustrative. A full build would read Copernicus data for your grid cell.</p></div>
+<div class="card"><h3>Scenarios</h3><p class="mut">SSP5-8.5 assumes high emissions. SSP2-4.5 is a middle road. Neither is a prediction.</p></div>
+<div class="card"><h3>The Green Deal</h3><p class="mut">The EU has committed to climate neutrality by 2050.</p></div></div></section>
+
+<nav id="nav" role="tablist"><button role="tab" data-t="scan" aria-selected="true"><span>🔭</span>Scan</button><button role="tab" data-t="mis" aria-selected="false"><span>✅</span>Missions</button><button role="tab" data-t="area" aria-selected="false"><span>🏙</span>My Area</button><button role="tab" data-t="learn" aria-selected="false"><span>📚</span>Learn</button></nav>
+</div>
+<script>
+const $=id=>document.getElementById(id),cl=(x,a,b)=>Math.max(a,Math.min(b,x)),lp=(a,b,t)=>a+(b-a)*t;
+const mix=(a,b,t)=>{const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),B=p(b);return"#"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join("")};
+const RAMP=["#3C7DD9","#F2C14E","#E8833A","#C8402B","#7A1F1F"],ramp=t=>{const p=cl(t,0,1)*4,i=Math.min(3,Math.floor(p));return mix(RAMP[i],RAMP[i+1],p-i)};
+const MIS=[["tree","🌳","Plant or adopt a tree","Adds shade and canopy on your street.","Photo proof, on device",22],["bike","🚲","Cycle instead of driving for a week","Cuts local traffic emissions.","Transit partner app",14],["comp","♻️","Start composting","Reduces waste methane.","Photo proof",8],["kwh","💡","Cut home energy use by 10%","Lower demand, lower emissions.","Energy provider app",30]];
+const LAY=[["heat","🌡","Heat"],["flood","🌊","Flood"],["air","🌫","Air"],["canopy","🌳","Canopy"],["bio","🦋","Nature"]];
+const MS=[[2026,"Baseline","Today's conditions for your grid cell are measured, not modelled."],[2030,"Longer summers","Heat peaks stretch and street trees show drought stress."],[2034,"Nights stop cooling","Tropical nights become regular, raising health risks for older residents."],[2038,"Violent rain","Short, intense storms overwhelm older drains and flood low streets."],[2042,"Heat as routine","Asphalt and roofs hold heat and cooling energy demand surges."],[2046,"Green loss","Canopy and habitat shrink. Pollinators and birds retreat."],[2050,"The EU 2050 mark","The year the EU aims for climate neutrality. Your street's future depends on choices made now."]];
+let S={scen:1,year:2026,layer:"heat",acc:[],done:[],days:0,restored:false,seen:false,split:.5};
+try{const s=JSON.parse(localStorage.getItem("efs2")||"null");if(s)S={...S,...s,year:2026,restored:false,seen:false}}catch(e){}
+const save=()=>{try{localStorage.setItem("efs2",JSON.stringify(S))}catch(e){}};
+const rest=()=>S.restored?Math.min(1,.34+S.done.length*.22):0;
+const tgt=()=>({k:S.restored?S.scen:(S.year-2026)/24*S.scen,r:rest()});
+const M=(k,r)=>{const m=1-.78*r;return{temp:2.4*k*m,aqi:Math.round(38+104*k*m),can:Math.round(-38*k*m+42*r),bio:Math.round(-21*k*m+10*r),fd:.4*k*m,m}};
+
+/* ---------- image pipeline ---------- */
+const cv=$("cv"),cx=cv.getContext("2d"),wk=document.createElement("canvas"),wx=wk.getContext("2d",{willReadFrequently:true}),sc=document.createElement("canvas"),sx=sc.getContext("2d",{willReadFrequently:true});
+let W=320,H=520,base=null,out=null,src={t:"demo"},v={k:0,r:0},T=0,dpr=1;
+function fit(){const r=$("view").getBoundingClientRect();if(!r.width)return;dpr=Math.min(2,devicePixelRatio||1);cv.width=r.width*dpr;cv.height=r.height*dpr;W=320;H=Math.round(W*r.height/r.width);wk.width=sc.width=W;wk.height=sc.height=H;out=wx.createImageData(W,H);grab()}
+function cover(el){const iw=el.videoWidth||el.naturalWidth,ih=el.videoHeight||el.naturalHeight,s=Math.max(W/iw,H/ih);sx.drawImage(el,(W-iw*s)/2,(H-ih*s)/2,iw*s,ih*s)}
+function grab(){if(src.t==="demo")street(sx,W,H);else if(src.t==="img")cover(src.el);else if(src.t==="cam"&&$("cam").readyState>=2)cover($("cam"));else return;base=sx.getImageData(0,0,W,H)}
+function tree(c,w,h,side,t,lush,g){const vx=w/2,vy=h*.42,gy=vy+(h-vy)*t,gx=vx+side*(w*.06+w*.4*t),k=w/320,r=(10+52*t)*k*g,th=(28+120*t)*(h/520)*g;
+ c.fillStyle="#6b4a33";c.fillRect(gx-3*k*(t+.4)*g,gy-th,6*k*(t+.4)*g,th);
+ [["#2f8f4e",0,0,1],["#3aa35a",-.5,.2,.75],["#27803f",.5,.25,.8]].forEach(a=>{c.fillStyle=lush?mix(a[0],"#1f9a4d",.6):a[0];c.beginPath();c.arc(gx+a[1]*r,gy-th-r*(.5-a[2]*.3),r*a[3],0,7);c.fill()})}
+function street(c,w,h){const vx=w/2,vy=h*.42;let g=c.createLinearGradient(0,0,0,vy*1.1);g.addColorStop(0,"#5fa8ea");g.addColorStop(1,"#cfe6f6");c.fillStyle=g;c.fillRect(0,0,w,h);
+ c.fillStyle="#a9a59c";c.fillRect(0,vy,w,h-vy);c.fillStyle="#b9c0c9";for(let i=0;i<7;i++)c.fillRect(vx-w*.3+i*w*.09,vy-h*(.05+.05*((i*37)%5)/4),w*.08,h*.12);
+ [1,-1].forEach(s=>{const X=f=>s>0?f*w*.3:w-f*w*.3,yT=f=>lp(h*.02,vy-h*.1,f),yB=f=>lp(h*.75,vy+h*.03,f);c.fillStyle=s>0?"#c9b8a4":"#b8bfc7";c.beginPath();c.moveTo(X(0),yT(0));c.lineTo(X(1),yT(1));c.lineTo(X(1),yB(1));c.lineTo(X(0),yB(0));c.fill();
+  c.fillStyle="rgba(50,70,90,.55)";for(let r=0;r<6;r++)for(let u=0;u<3;u++){const a=.08+u*.3,b=a+.16,q=(x,y)=>[X(x),yT(x)+(yB(x)-yT(x))*y];const p=[q(a,(r+.2)/6.2),q(b,(r+.2)/6.2),q(b,(r+.75)/6.2),q(a,(r+.75)/6.2)];c.beginPath();p.forEach((z,i)=>i?c.lineTo(z[0],z[1]):c.moveTo(z[0],z[1]));c.fill()}});
+ c.fillStyle="#575c63";c.beginPath();c.moveTo(vx-3,vy);c.lineTo(vx+3,vy);c.lineTo(w*.86,h);c.lineTo(w*.14,h);c.fill();
+ c.fillStyle="#e9e2cf";[.12,.3,.5,.72,.95].forEach(t=>{const y=vy+(h-vy)*t,hw=(2+8*t)*w/320;c.fillRect(vx-hw/2,y,hw,(4+22*t)*h/520)});
+ [.18,.4,.68,.98].forEach(t=>[1,-1].forEach(s=>tree(c,w,h,s,t,0,1)))}
+function proc(){const k=v.k,rs=v.r,D=base.data,O=out.data,sp=S.restored?S.split:1,LY=S.layer,fd=.4*k,ywD=H*(1-Math.min(.3,fd*.75)),ywR=H*(1-Math.min(.3,fd*.75*.22));
+ for(let y=0;y<H;y++){const yy=y/H,sh=k>.05&&yy>.45?Math.round(Math.sin(y*.4+T*4)*1.7*k*(LY==="heat"?1.6:1)):0;
+  for(let x=0;x<W;x++){const j=(y*W+x)*4,s=(y*W+cl(x+sh,0,W-1))*4;let r=D[s],g=D[s+1],b=D[s+2];const R=x/W>sp?rs:0,dk=k*(1-R),lum=(r+g+b)/3;
+   if(g>r+5&&g>b+5){if(dk>0){const a=Math.min(1,dk*1.25);r+=((r+g)*.55+22-r)*a;g+=(g*.62+18-g)*a;b*=1-.45*a}if(R>0){g=g*(1+.22*R)+14*R;r*=1-.12*R}if(LY==="canopy"){if(dk>.3){r+=60*dk;g*=.7}else{g+=45;r*=.6}}}
+   else if(b>r+8&&b>=g&&lum>105&&yy<.6){const a=dk*.85;r+=(238-r)*a;g+=(176-g)*a;b+=(96-b)*a;b+=10*R}
+   const hz=Math.min(.75,dk*(.12+.55*(1-yy))*(LY==="air"?1.5:1));r+=(206-r)*hz;g+=(158-g)*hz;b+=(92-b)*hz;
+   const f=.3*dk;r+=(lum-r)*f;g+=(lum-g)*f;b+=(lum-b)*f;
+   if(dk>0){const a=(LY==="heat"?.55:.12)*dk*(yy>.42?1:.4)*(.4+lum/425);r+=(255-r)*a;g+=(96+lum*.15-g)*a;b+=(30-b)*a}
+   if(y>(R>0?ywR:ywD)&&yy>.5&&fd>.01){const rp=Math.sin(x*.11+y*.35+T*2.5)*10,a=LY==="flood"?.66:.5;r+=(38-r)*a+rp*.4;g+=(118-g)*a+rp;b+=(160-b)*a+rp}
+   if(R>0){b+=6*R;r-=6*R}
+   O[j]=r;O[j+1]=g;O[j+2]=b;O[j+3]=255}}
+ wx.putImageData(out,0,0)}
+function pin(x,y,txt,on){const q=dpr,px=x*cv.width,py=y*cv.height;cx.font=`bold ${12*q}px Arial`;const w=cx.measureText(txt).width+16*q,h=22*q,lx=cl(px-w/2,6*q,cv.width-w-6*q),ly=py-36*q,ph=(T%1.5)/1.5;
+ cx.globalAlpha=on?1:.5;cx.strokeStyle="#FFD617";cx.lineWidth=1.5*q;cx.beginPath();cx.moveTo(px,py);cx.lineTo(px,ly+h);cx.stroke();
+ cx.fillStyle="rgba(13,22,32,.85)";cx.beginPath();cx.roundRect(lx,ly,w,h,h/2);cx.fill();if(on)cx.stroke();
+ cx.fillStyle="#fff";cx.textBaseline="middle";cx.fillText(txt,lx+8*q,ly+h/2+1);cx.fillStyle="#FFD617";cx.beginPath();cx.arc(px,py,4*q,0,7);cx.fill();
+ cx.strokeStyle=`rgba(255,214,23,${.7-.6*ph})`;cx.beginPath();cx.arc(px,py,(4+11*ph)*q,0,7);cx.stroke();cx.globalAlpha=1}
+const BF=[[.15,.2,0],[.62,.28,1],[.3,.34,2],[.8,.22,3],[.5,.4,4],[.2,.46,5],[.7,.45,6],[.42,.16,7]];
+function draw(){proc();cx.imageSmoothingQuality="high";cx.drawImage(wk,0,0,cv.width,cv.height);
+ const w=cv.width,h=cv.height,m=M(v.k,v.r),L=S.layer;
+ if(v.r>0){cx.save();cx.beginPath();cx.rect(S.split*w,0,w,h);cx.clip();
+  cx.fillStyle="rgba(46,158,91,.5)";const vy=h*.42;cx.beginPath();[[.25,.05],[.36,.05],[.36,1],[.25,1]].forEach(([a,t],i)=>{const X=w/2+a*w*t,Y=vy+(h-vy)*t;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.fill();
+  [.28,.54,.82].forEach(t=>[1,-1].forEach(s=>tree(cx,w,h,s,t,1,v.r)));cx.restore()}
+ if(L==="bio"||v.r>0){const n=Math.round(8*cl(1-.95*v.k*(1-v.r)+.3*v.r,.05,1));cx.font=`${20*dpr}px Arial`;BF.slice(0,n).forEach(b=>{cx.globalAlpha=.9;cx.fillText("🦋",(b[0]+Math.sin(T+b[2])*.03)*w,(b[1]+Math.cos(T*1.3+b[2])*.02)*h)});cx.globalAlpha=1}
+ const yw=(v.r>0?.22:1)*.4*v.k;
+ pin(.5,.55,`Road surface ${Math.round(33+14*v.k*m.m)} °C`,L==="heat");pin(.5,.14,`AQI ${m.aqi}`,L==="air");pin(.82,.34,`Canopy ${m.can>0?"+":""}${m.can} %`,L==="canopy");
+ if(fd()>0)pin(.2,1-Math.min(.3,yw*.75)+.01,`Flood +${(yw).toFixed(2)} m`,L==="flood");
+ if(S.restored){const x=S.split*w;cx.fillStyle="#fff";cx.fillRect(x-1.5*dpr,0,3*dpr,h);cx.beginPath();cx.arc(x,h*.5,16*dpr,0,7);cx.fill();cx.fillStyle="#14202E";cx.font=`bold ${14*dpr}px Arial`;cx.textAlign="center";cx.fillText("↔",x,h*.5+1);cx.textAlign="left";
+  [["2050 degraded",10*dpr],["2050 restored",w-110*dpr]].forEach(p=>{cx.fillStyle="rgba(13,22,32,.8)";cx.beginPath();cx.roundRect(p[1],56*dpr,100*dpr,22*dpr,11*dpr);cx.fill();cx.fillStyle="#fff";cx.font=`bold ${11*dpr}px Arial`;cx.fillText(p[0],p[1]+9*dpr,67*dpr)})}}
+const fd=()=>.4*v.k;
+let last=0;function loop(n){requestAnimationFrame(loop);if(n-last<50||!out)return;last=n;T=n/1000;const t=tgt();v.k+=(t.k-v.k)*.16;v.r+=(t.r-v.r)*.12;if(src.t==="cam")grab();if(base)draw()}
+
+/* ---------- info panel ---------- */
+function ui(){const t=tgt(),m=M(t.k,t.r),yr=S.restored?2050:S.year,p=(yr-2026)/24,sev=S.restored?0:p;
+ $("yr").textContent=yr;const names=["Today","Early warning","Serious","Severe","Critical"],pi=p<.04?0:Math.min(4,1+Math.floor(p*4));
+ $("ph").textContent=S.restored?"Two futures: degraded vs restored":names[pi]+" · "+(S.scen==1?"SSP5-8.5":"SSP2-4.5");$("phc").style.background=S.restored?"#8CCB6B":ramp(pi/4);
+ $("scBtn").textContent=(S.scen==1?"SSP5-8.5":"SSP2-4.5")+" ▾";$("sld").value=yr;$("sld").hidden=S.restored;$("steps").hidden=S.restored;$("cmpRow").hidden=!S.restored;
+ const sv=[[m.temp/2.4,"🌡","Temperature","+"+m.temp.toFixed(1)+" °C","C3S"],[(m.aqi-38)/104,"🏭","Air quality","AQI "+m.aqi,"CAMS"],[-m.can/38,"🌳","Canopy",(m.can>0?"+":"")+m.can+" %","CLMS"],[-m.bio/21,"🦋","Biodiversity*",(m.bio>0?"+":"")+m.bio+" %","proxy"]];
+ $("tiles").innerHTML=sv.map(a=>`<div class="tile"><div class="tl">${a[1]} ${a[2]}</div><b>${a[3]}</b><div class="tb"><i style="width:${Math.max(4,cl(Math.abs(a[0]),0,1)*100)}%;background:${a[0]<=0?"#2E9E5B":ramp(a[0])}"></i></div><small>${a[4]}</small></div>`).join("");
+ const q=t.k*m.m,ST=[["Days above 30 °C","/yr",Math.round(9+34*q),9],["Tropical nights","/yr",Math.round(2+26*q),2],["Road surface","°C",Math.round(33+14*q),33],["Cooling energy demand","%",Math.round(60*q),0],["Water stress","%",Math.round(30+45*q),30],["A 1-in-100 flood becomes 1-in-","yrs",Math.round(100-82*q),100]];
+ $("stats").innerHTML=ST.map(s=>{const d=s[2]-s[3];return`<div class="st"><small>${s[0]}</small><b>${s[2]}</b> <span style="font-size:12px">${s[1]}</span><br><em>${d?(d>0?"+":"")+d+" vs 2026":"same as 2026"}</em></div>`}).join("");
+ let cur=MS[0];MS.forEach(a=>{if(a[0]<=yr)cur=a});
+ $("story").innerHTML=S.restored?`<h4>Restored street</h4><p>With ${S.done.length} mission${S.done.length==1?"":"s"} done, shade and greenery cool the street by about ${(2.4*t.k-m.temp).toFixed(1)} °C compared with the degraded 2050 view. Air clears to AQI ${m.aqi}, and the water line drops to ${m.fd.toFixed(2)} m.</p>`:`<h4>${yr}: ${cur[1]}</h4><p>${cur[2]}</p><p style="margin-top:6px;color:#F2C14E">Road surface reaches about ${Math.round(33+14*q)} °C on a summer afternoon. ${Math.round(9+34*q)} days a year pass 30 °C.</p>`;
+ $("ms").innerHTML=MS.map(a=>`<li class="${a[0]<=yr?"p":""}"><b>${a[0]}</b><span><b style="min-width:0">${a[1]}</b></span></li>`).join("");
+ const pts=s=>{let d="";for(let y=2026;y<=2050;y++)d+=(y>2026?"L":"M")+(10+(y-2026)/24*280).toFixed(1)+" "+(90-(2.4*(y-2026)/24*s)/2.4*78).toFixed(1);return d};
+ const cy=(10+(yr-2026)/24*280),cyv=90-(2.4*(yr-2026)/24*S.scen)/2.4*78;
+ $("chart").innerHTML=`<path d="${pts(1)}" stroke="#C8402B" fill="none" stroke-width="2" opacity="${S.scen==1?1:.35}"/><path d="${pts(.6)}" stroke="#F2C14E" fill="none" stroke-width="2" opacity="${S.scen==1?.35:1}"/><line x1="${cy}" x2="${cy}" y1="6" y2="92" stroke="#fff" stroke-dasharray="3 3" opacity=".5"/><circle cx="${cy}" cy="${cyv}" r="5" fill="#FFD617"/><text x="10" y="99" fill="#fff" font-size="9" opacity=".6">2026</text><text x="270" y="99" fill="#fff" font-size="9" opacity=".6">2050</text><text x="200" y="14" fill="#C8402B" font-size="9">SSP5-8.5</text><text x="200" y="26" fill="#F2C14E" font-size="9">SSP2-4.5</text>`;
+ $("rail").innerHTML=LAY.map(l=>`<button class="glass" data-l="${l[0]}" aria-pressed="${l[0]===S.layer}" aria-label="${l[2]} layer"><span>${l[1]}</span>${l[2]}</button>`).join("");
+ if(yr==2050&&!S.seen&&!S.restored){S.seen=true;setTimeout(()=>$("pivot").classList.add("on"),2200)}
+ mis();area()}
+const grab_=()=>{};function setY(y){S.year=cl(y,2026,2050);if(navigator.vibrate&&S.year%5==0)navigator.vibrate(10);ui()}
+$("sld").oninput=e=>setY(+e.target.value);$("mn").onclick=()=>setY(S.year-1);$("pl").onclick=()=>setY(S.year+1);
+$("cmp").oninput=e=>{S.split=e.target.value/100};$("exitR").onclick=()=>{S.restored=false;ui()};
+$("rail").onclick=e=>{const b=e.target.closest("[data-l]");if(b){S.layer=b.dataset.l;ui()}};
+$("scBtn").onclick=()=>{S.scen=S.scen==1?.6:1;ui()};$("grab").onclick=()=>$("sh").classList.toggle("open");
+$("loc").onclick=()=>{$("onb").style.display="flex"};
+$("toAct").onclick=$("goAct").onclick=()=>{$("pivot").classList.remove("on");$("sh").classList.remove("open");go("mis")};$("keep").onclick=()=>$("pivot").classList.remove("on");
+
+/* ---------- missions, area, nav ---------- */
+function mis(){$("mlist").innerHTML=MIS.map(m=>{const a=S.acc.includes(m[0]),d=S.done.includes(m[0]);return`<div class="card"><h3>${m[1]} ${m[2]}</h3><p class="mut">${m[3]}<br>Verified by: ${m[4]}<br>About ${m[5]} kg CO₂e avoided per month (illustrative)</p>${d?'<b style="color:var(--grn)">✓ Completed</b>':a?`<button class="btn ok" data-d="${m[0]}">Mark done (demo verification)</button>`:`<button class="btn" data-a="${m[0]}">Accept mission</button>`}</div>`}).join("")}
+$("mlist").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.a)S.acc.push(b.dataset.a);if(b.dataset.d){S.done.push(b.dataset.d);S.days=0}save();ui()};
+function area(){const n=S.done.length;$("score").textContent=n*25;$("scBar").style.width=Math.min(100,n*25)+"%";$("areaTxt").textContent=n?`${n} mission${n>1?"s":""} completed.`:"Complete missions to raise your score.";
+ $("log").textContent=n?S.done.reduce((s,id)=>s+MIS.find(m=>m[0]===id)[5],0)+" kg CO₂e avoided per month (illustrative).":"No missions completed yet.";$("rescan").disabled=!(n&&S.days>=7);$("ff").disabled=!n||S.days>=7}
+$("ff").onclick=()=>{S.days=7;save();ui()};$("rescan").onclick=()=>{S.restored=true;S.split=.5;$("cmp").value=50;save();go("scan");ui();startScan()};
+$("reset").onclick=()=>{S={...S,acc:[],done:[],days:0,restored:false,seen:false,year:2026};save();ui()};
+function go(t){document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x.id==="t-"+t));document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.t===t));if(t==="scan")setTimeout(fit,30)}
+$("nav").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.t)};
+
+/* ---------- start ---------- */
+function startScan(){const st=["Detecting ground…","Finding sky…","Mapping buildings…","Reading vegetation…","Locking location…"];let i=0;$("scan").classList.add("on");$("top").style.opacity=$("rail").style.opacity=0;
+ const iv=setInterval(()=>{$("scanT").textContent=st[++i]||"Ready"},520);setTimeout(()=>{clearInterval(iv);$("scan").classList.remove("on");$("top").style.opacity=$("rail").style.opacity=1},2700)}
+function begin(l){$("onb").style.display="none";$("loc").textContent=l+" ▾";fit();grab();startScan();ui()}
+$("scPick").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.scen=+b.dataset.s;[...$("scPick").children].forEach(x=>x.setAttribute("aria-pressed",x===b));ui()};
+$("bDemo").onclick=()=>{src={t:"demo"};begin("📍 Demo street")};
+$("bPhoto").onclick=()=>$("file").click();
+$("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{src={t:"img",el:im};begin("📍 Your photo")};im.src=URL.createObjectURL(f)};
+$("bCam").onclick=async()=>{try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}}),c=$("cam");c.srcObject=s;await c.play();src={t:"cam"};begin("📍 Live camera")}catch(e){src={t:"demo"};begin("📍 Demo (camera unavailable)")}};
+addEventListener("resize",fit);fit();ui();requestAnimationFrame(loop);
+</script></body></html>
